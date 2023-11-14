@@ -24,9 +24,15 @@ const client = new MongoClient(uri, {
 });
 async function run() {
     try {
-      
+        //connect collection 
+        const natureDataCollection = client.db('natureNurtureDB').collection('servicesDB');
+        
       console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
     }
   }
 run().catch(console.dir);
+
+// app.get('/api/v1/services',(req, res)=>{
+    // natureDataCollection.find()
+// })
