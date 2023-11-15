@@ -2,6 +2,9 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
+
 
 const app = express();
 const port = process.env.PORT||5000;
@@ -9,6 +12,9 @@ const port = process.env.PORT||5000;
 // middleware 
 // parsers  to pasrsers data 
 app.use(express.json());
+app.use(cors({
+  origin: ['http://localhost:5173'],
+}))
 
 app.get('/',(req, res)=>{
     res.send('Nature Nurture server is running...');
@@ -37,11 +43,32 @@ async function run() {
     // create user collection 
     const userCollection = client.db('NatureDatabase').collection('usersDB');
 
+
+    // create post api to get access token from client 
+    app.post('/api/v1/auth/access-token', async(req, res)=>{
+      // creating token and sending to client
+      // here we are expecting that client will send object inside body 
+      const user = req.body;
+      // jwt.sign takes payload as object then secret and it will give token in return
+      const token = jwt.sign(user, process.env.AUTH_ACCESS_TOKEN);
+      console.log(token);
+      // in cookie first paramter indicates in which name we want to save this and 2nd parameter is option 
+      res.cookie('token',{
+        httpO
+      })
+    })
     // get services data 
     app.get('/api/v1/services', async(req, res)=>{
       const cursor = servicesCollection.find();
       const result = await cursor.toArray();
       res.send(result);
+    })
+    // get specific service data 
+    app.get('/api/v1/service-detail/:id', async(req, res)=>{
+      const id = req.params;
+      const query = {_id: new ObjectId(id)};
+      const cursor = await servicesCollection.findOne(query);
+      res.send(cursor);
     })
 
     // create route for post bookings data 
