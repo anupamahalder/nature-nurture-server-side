@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
@@ -35,7 +35,7 @@ async function run() {
     // create booking collection 
     const bookingsCollection = client.db('NatureDatabase').collection('bookingsDB');
     // create user collection 
-    const useCollection = client.db('NatureDatabase').collection('usersDB');
+    const userCollection = client.db('NatureDatabase').collection('usersDB');
 
     // get services data 
     app.get('/api/v1/services', async(req, res)=>{
@@ -51,11 +51,28 @@ async function run() {
       const result = await bookingsCollection.insertOne(booking);
       res.send(result);
     })
+    // get user data with given email
+    app.get('/api/v1/user/:userEmail', async(req, res)=>{
+      const email = req.params.userEmail;
+      const query = {email: email};
+      const result = await userCollection.find(query);
+      res.send(result);
+    })
     // create user data 
     app.post('/api/v1/create-user', async(req, res)=>{
       // console.log(req.body);
       const userData = req.body;
-      const result = await useCollection.insertOne(userData);
+      const result = await userCollection.insertOne(userData);
+      res.send(result);
+    })
+    // cancel booking with id(id will come from client side)
+    // each id will be different so we need to recieve id dynamically using /:id 
+    app.delete('/api/v1/user/cancel-booking/:bookingId', async(req, res)=>{
+      // id will come from body of request 
+      const id = req.params.bookingId;
+      // console.log(id);
+      const query = {_id: new ObjectId(id)};
+      const result = await bookingsCollection.deleteOne(query);
       res.send(result);
     })
     // Send a ping to confirm a successful connection
