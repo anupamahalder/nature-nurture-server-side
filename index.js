@@ -71,6 +71,27 @@ async function run() {
       res.send(cursor);
     })
 
+    // get all bookings data 
+    // app.get('/api/v1/bookings', async(req, res)=>{
+    //   const cursor = bookingsCollection.find();
+    //   const result = await cursor.toArray();
+    //   res.send(result);
+    // })
+
+    // get bookings data for a specific user email 
+    app.get('/api/v1/bookings-data', async(req, res)=>{
+      // from client side email will get as query parameter 
+      console.log(req.query.email);
+      let query={};
+      if(req.query?.email){
+        query = {email: req.query.email};
+        const result = await bookingsCollection.find(query).toArray();
+        res.send(result);
+      }
+      else{
+        res.status(404).send({message: "anauthorized access"});
+      }
+    })
     // create route for post bookings data 
     app.post('/api/v1/user/create-booking', async(req, res)=>{
       // console.log(req.body);
