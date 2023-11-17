@@ -73,7 +73,7 @@ async function run() {
 
     // create route for post bookings data 
     app.post('/api/v1/user/create-booking', async(req, res)=>{
-      console.log(req.body);
+      // console.log(req.body);
       const booking = req.body;
       const result = await bookingsCollection.insertOne(booking);
       res.send(result);
