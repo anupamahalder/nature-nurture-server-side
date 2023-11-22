@@ -13,7 +13,7 @@ const port = process.env.PORT||5000;
 // parsers  to pasrsers data 
 app.use(express.json());
 app.use(cors({
-  origin: ['http://localhost:5173'],
+  origin: ['https://655db5ca2a03627252b1d5e4--taupe-longma-650ef1.netlify.app','http://localhost:5173'],
 }))
 
 app.get('/',(req, res)=>{
@@ -35,7 +35,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
     // create service connection
     const servicesCollection = client.db('NatureDatabase').collection('servicesDB');
     // create booking collection 
@@ -99,6 +99,13 @@ async function run() {
       const result = await bookingsCollection.insertOne(booking);
       res.send(result);
     })
+    // delete booking data 
+    app.delete('/api/v1/user/delete-booking/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: id};
+      const result = await bookingsCollection.deleteOne(query);
+      res.send(result);
+    })
     // get user data with given email
     app.get('/api/v1/user/:userEmail', async(req, res)=>{
       const email = req.params.userEmail;
@@ -124,7 +131,7 @@ async function run() {
       res.send(result);
     })
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
